@@ -156,7 +156,7 @@ class TennisGameDefactored3:
         self.p2N = player2Name
         self.p1 = 0
         self.p2 = 0
-        
+
     def won_point(self, n):
         if n == self.p1N:
             self.p1 += 1
