@@ -162,7 +162,7 @@ class TennisGameDefactored3:
             self.p1 += 1
         else:
             self.p2 += 1
-    
+
     def score(self):
         if (self.p1 < 4 and self.p2 < 4):
             p = ["Love", "Fifteen", "Thirty", "Forty"]
