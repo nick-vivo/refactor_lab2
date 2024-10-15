@@ -1,19 +1,48 @@
 # -*- coding: utf-8 -*-
 
 class TennisGameDefactored1:
-    def __init__(self, player1_name, player2_name):
+    """
+    A class representing a tennis game.
+
+    Attributes:
+        player1_name (str): The name of the first player.
+        player2_name (str): The name of the second player.
+        p1_points (int): The number of points scored by the first player.
+        p2_points (int): The number of points scored by the second player.
+    """
+
+    def __init__(self, player1_name: str, player2_name: str) -> None:
+        """
+        Initializes a new tennis game with two players.
+
+        Args:
+            player1_name (str): The name of the first player.
+            player2_name (str): The name of the second player.
+        """
         self.player1_name = player1_name
         self.player2_name = player2_name
         self.p1_points = 0
         self.p2_points = 0
 
-    def won_point(self, player_name):
+    def won_point(self, player_name: str) -> None:
+        """
+        Increments the points of the player who won the point.
+
+        Args:
+            player_name (str): The name of the player who won the point.
+        """
         if player_name == self.player1_name:
             self.p1_points += 1
         else:
             self.p2_points += 1
 
-    def score(self):
+    def score(self) -> str:
+        """
+        Returns the current score of the game.
+
+        Returns:
+            str: The current score of the game.
+        """
         result = ""
         temp_score = 0
 
@@ -51,19 +80,48 @@ class TennisGameDefactored1:
 
 
 class TennisGameDefactored2:
-    def __init__(self, player1_name, player2_name):
+    """
+    A class representing a tennis game.
+
+    Attributes:
+        player1_name (str): The name of the first player.
+        player2_name (str): The name of the second player.
+        p1_points (int): The number of points scored by the first player.
+        p2_points (int): The number of points scored by the second player.
+    """
+
+    def __init__(self, player1_name: str, player2_name: str) -> None:
+        """
+        Initializes a new tennis game with two players.
+
+        Args:
+            player1_name (str): The name of the first player.
+            player2_name (str): The name of the second player.
+        """
         self.player1_name = player1_name
         self.player2_name = player2_name
         self.p1_points = 0
         self.p2_points = 0
 
-    def won_point(self, player_name):
+    def won_point(self, player_name: str) -> None:
+        """
+        Increments the points of the player who won the point.
+
+        Args:
+            player_name (str): The name of the player who won the point.
+        """
         if player_name == self.player1_name:
             self.p1_score()
         else:
             self.p2_score()
 
-    def score(self):
+    def score(self) -> str:
+        """
+        Returns the current score of the game.
+
+        Returns:
+            str: The current score of the game.
+        """
         result = ""
         if self.p1_points == self.p2_points and self.p1_points < 4:
             if self.p1_points == 0:
@@ -130,35 +188,82 @@ class TennisGameDefactored2:
             result = f"Win for {self.player2_name}"
         return result
 
-    def set_p1_score(self, number):
+    def set_p1_score(self, number: int) -> None:
+        """
+        Sets the score of the first player.
+
+        Args:
+            number (int): The number of points to add to the first player's score.
+        """
         for _ in range(number):
             self.p1_score()
 
-    def set_p2_score(self, number):
+    def set_p2_score(self, number: int) -> None:
+        """
+        Sets the score of the second player.
+
+        Args:
+            number (int): The number of points to add to the second player's score.
+        """
         for _ in range(number):
             self.p2_score()
 
-    def p1_score(self):
+    def p1_score(self) -> None:
+        """
+        Increments the score of the first player.
+        """
         self.p1_points += 1
 
-    def p2_score(self):
+    def p2_score(self) -> None:
+        """
+        Increments the score of the second player.
+        """
         self.p2_points += 1
 
 
 class TennisGameDefactored3:
-    def __init__(self, player1_name, player2_name):
+    """
+    A class representing a tennis game.
+
+    Attributes:
+        p1_name (str): The name of the first player.
+        p2_name (str): The name of the second player.
+        p1 (int): The number of points scored by the first player.
+        p2 (int): The number of points scored by the second player.
+    """
+
+    def __init__(self, player1_name: str, player2_name: str) -> None:
+        """
+        Initializes a new tennis game with two players.
+
+        Args:
+            player1_name (str): The name of the first player.
+            player2_name (str): The name of the second player.
+        """
         self.p1_name = player1_name
         self.p2_name = player2_name
         self.p1 = 0
         self.p2 = 0
 
-    def won_point(self, player_name):
+    def won_point(self, player_name: str) -> None:
+        """
+        Increments the points of the player who won the point.
+
+        Args:
+            player_name (str): The name of the player who won the point.
+        """
         if player_name == self.p1_name:
             self.p1 += 1
         else:
             self.p2 += 1
 
-    def score(self):
+    def score(self) -> str:
+        """
+        Returns the current score of the game.
+
+        Returns:
+            str: The current score of the game.
+        """
         if self.p1 < 4 and self.p2 < 4:
             points = ["Love", "Fifteen", "Thirty", "Forty"]
             score = points[self.p1]
