@@ -7,13 +7,13 @@ class TennisGameDefactored1:
         self.player2Name = player2Name
         self.p1points = 0
         self.p2points = 0
-        
+
     def won_point(self, playerName):
         if playerName == self.player1Name:
             self.p1points += 1
         else:
             self.p2points += 1
-    
+
     def score(self):
         result = ""
         tempScore=0
