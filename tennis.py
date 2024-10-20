@@ -34,7 +34,7 @@ class TennisGameDefactored1:
         try:
             self.scores[player_name] += 1
         except ValueError as e:
-            raise ValueError(f"Значения нету в списке имён игроков': {str(e)}")
+            raise ValueError(f"Bad str: {str(e)}")
 
     def score(self) -> str:
         """
@@ -52,7 +52,7 @@ class TennisGameDefactored1:
             return self._get_advantage_or_win_score(score1, score2)
 
         else:
-            return self._get_separate_scores()
+            return self._get_separate_scores(score1, score2)
 
     def _get_tied_score(self, points: int) -> str:
         """
@@ -66,10 +66,10 @@ class TennisGameDefactored1:
         """
 
         POINTS_MAP = {
-            0: "Love-All",
-            1: "Fifteen-All",
-            2: "Thirty-All",
-            3: "Forty-All",
+            0: "Zero-All",
+            1: "One-All",
+            2: "Two-All",
+            3: "Three-All",
         }
         return POINTS_MAP.get(points, "Deuce")
 
@@ -107,17 +107,19 @@ class TennisGameDefactored1:
         Returns:
             str: The separate scores representation.
         """
-        scores = []
+        scores_str = []
 
-        for points in [(score1, self.player1_name), (score2, self.player2_name)]:
-            score_map = {
-                0: "Love",
-                1: "Fifteen",
-                2: "Thirty",
-                3: "Forty",
-            }
-            scores.append(score_map[points])
-        return "-".join(scores)
+        score_map = {
+            0: "Zero",
+            1: "One",
+            2: "Two",
+            3: "Three",
+        }
+
+        for points, player_name in [(score1, self.player1_name), (score2, self.player2_name)]:
+            scores_str.append(score_map[points])
+
+        return "-".join(scores_str)
 
 
 class TennisGameDefactored2:
@@ -174,14 +176,14 @@ class TennisGameDefactored2:
 
         if points < 4:
 
-            answer = ["Love", "Fifteen", "Thirty", "Forty"]
+            answer = ["Zero", "One", "Two", "Three"]
             return f"{answer[points]}-All"
 
         return "Deuce"
 
     def _handle_regular_score(self, score1: int, score2: int) -> str:
 
-        score_names = ["Love", "Fifteen", "Thirty", "Forty"]
+        score_names = ["Zero", "One", "Two", "Three"]
 
         p1_res = score_names[score1]
         p2_res = score_names[score2]
@@ -205,12 +207,12 @@ class TennisGameDefactored2:
 
         try:
             if points < 0:
-                raise ValueError("Нельзя добавить отрицательное число к очкам.")
+                raise ValueError("Negative arg points: ", points)
 
             self.scores[player_name] += points
 
         except ValueError as e:
-            raise ValueError(f"Значения нету в списке имён игроков или добавлено отрицательное число': {str(e)}")
+            raise ValueError(f"Neg number or player not part.")
 
     def set_p1_score(self, number: int) -> None:
         """
@@ -297,7 +299,8 @@ class TennisGameDefactored3:
         Returns:
             str: The current score in regular play.
         """
-        points = ["Love", "Fifteen", "Thirty", "Forty"]
+        points = ["Zero", "One", "Two", "Three"]
+
         score1 = points[self.p1_points]
         score2 = points[self.p2_points]
         return score1 + "-All" if self.p1_points == self.p2_points else f"{score1}-{score2}"
