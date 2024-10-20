@@ -74,7 +74,9 @@ class TennisGameDefactored1:
             return f"Win for {self.player2_name}"
 
     def _get_separate_scores(self, score1, score2) -> str:
+
         scores = []
+
         for points in [(score1, self.player1_name), (score2, self.player2_name)]:
             score_map = {
                 0: "Love",
@@ -107,8 +109,7 @@ class TennisGameDefactored2:
         """
         self.player1_name = player1_name
         self.player2_name = player2_name
-        self.p1_points = 0
-        self.p2_points = 0
+        self.scores = {player1_name : 0, player2_name : 0}
 
     def won_point(self, player_name: str) -> None:
         """
@@ -117,10 +118,7 @@ class TennisGameDefactored2:
         Args:
             player_name (str): The name of the player who won the point.
         """
-        if player_name == self.player1_name:
-            self.p1_score()
-        else:
-            self.p2_score()
+        self.scores[player_name] += 1
 
     def score(self) -> str:
         """
@@ -129,71 +127,47 @@ class TennisGameDefactored2:
         Returns:
             str: The current score of the game.
         """
-        result = ""
-        if self.p1_points == self.p2_points and self.p1_points < 4:
-            if self.p1_points == 0:
-                result = "Love"
-            if self.p1_points == 1:
-                result = "Fifteen"
-            if self.p1_points == 2:
-                result = "Thirty"
-            if self.p1_points == 3:
-                result = "Forty"
-            result += "-All"
-        if self.p1_points == self.p2_points and self.p1_points >= 4:
-            result = "Deuce"
+        score1, score2 = self.scores.values()
 
-        p1_res = ""
-        p2_res = ""
-        if self.p1_points > 0 and self.p2_points == 0:
-            if self.p1_points == 1:
-                p1_res = "Fifteen"
-            if self.p1_points == 2:
-                p1_res = "Thirty"
-            if self.p1_points == 3:
-                p1_res = "Forty"
-            p2_res = "Love"
-            result = p1_res + "-" + p2_res
-        if self.p2_points > 0 and self.p1_points == 0:
-            if self.p2_points == 1:
-                p2_res = "Fifteen"
-            if self.p2_points == 2:
-                p2_res = "Thirty"
-            if self.p2_points == 3:
-                p2_res = "Forty"
-            p1_res = "Love"
-            result = p1_res + "-" + p2_res
+        if score1 == score2:
+            return self._handle_draw_score(score1)
 
-        if self.p1_points > self.p2_points and self.p1_points < 4:
-            if self.p1_points == 2:
-                p1_res = "Thirty"
-            if self.p1_points == 3:
-                p1_res = "Forty"
-            if self.p2_points == 1:
-                p2_res = "Fifteen"
-            if self.p2_points == 2:
-                p2_res = "Thirty"
-            result = p1_res + "-" + p2_res
-        if self.p2_points > self.p1_points and self.p2_points < 4:
-            if self.p2_points == 2:
-                p2_res = "Thirty"
-            if self.p2_points == 3:
-                p2_res = "Forty"
-            if self.p1_points == 1:
-                p1_res = "Fifteen"
-            if self.p1_points == 2:
-                p1_res = "Thirty"
-            result = p1_res + "-" + p2_res
+        elif max(score1, score2) >= 4:
+            return self._handle_win_or_advantage(score1, score2)
 
-        if self.p1_points > self.p2_points and self.p2_points >= 3:
-            result = f"Advantage {self.player1_name}"
-        if self.p2_points > self.p1_points and self.p1_points >= 3:
-            result = f"Advantage {self.player2_name}"
-        if self.p1_points >= 4 and self.p2_points >= 0 and (self.p1_points - self.p2_points) >= 2:
-            result = f"Win for {self.player1_name}"
-        if self.p2_points >= 4 and self.p1_points >= 0 and (self.p2_points - self.p1_points) >= 2:
-            result = f"Win for {self.player2_name}"
-        return result
+        else:
+            return self._handle_regular_score(score1, score2)
+
+    def _handle_draw_score(self, points) -> str:
+
+        if points < 4:
+
+            answer = ["Love", "Fifteen", "Thirty", "Forty"]
+            return f"{answer[points]}-All"
+
+        return "Deuce"
+
+    def _handle_regular_score(self, score1, score2) -> str:
+
+        score_names = ["Love", "Fifteen", "Thirty", "Forty"]
+
+        p1_res = score_names[score1]
+        p2_res = score_names[score2]
+
+        return f"{p1_res}-{p2_res}"
+
+    def _handle_win_or_advantage(self, score1, score2) -> str:
+
+        if score1 >= 4 and (score1 - score2) >= 2:
+            return f"Win for {self.player1_name}"
+
+        if score2 >= 4 and (score2 - score1) >= 2:
+            return f"Win for {self.player2_name}"
+
+        if score1 > score2:
+            return f"Advantage {self.player1_name}"
+
+        return f"Advantage {self.player2_name}"
 
     def set_p1_score(self, number: int) -> None:
         """
@@ -202,8 +176,7 @@ class TennisGameDefactored2:
         Args:
             number (int): The number of points to add to the first player's score.
         """
-        for _ in range(number):
-            self.p1_score()
+        self.scores[self.player1_name] += number
 
     def set_p2_score(self, number: int) -> None:
         """
@@ -212,20 +185,7 @@ class TennisGameDefactored2:
         Args:
             number (int): The number of points to add to the second player's score.
         """
-        for _ in range(number):
-            self.p2_score()
-
-    def p1_score(self) -> None:
-        """
-        Increments the score of the first player.
-        """
-        self.p1_points += 1
-
-    def p2_score(self) -> None:
-        """
-        Increments the score of the second player.
-        """
-        self.p2_points += 1
+        self.scores[self.player2_name] += number
 
 
 class TennisGameDefactored3:
