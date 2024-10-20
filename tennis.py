@@ -150,7 +150,7 @@ class TennisGameDefactored2:
         Args:
             player_name (str): The name of the player who won the point.
         """
-        self.scores[player_name] += 1
+        self._set_points_player(1, player_name)
 
     def score(self) -> str:
         """
@@ -201,6 +201,17 @@ class TennisGameDefactored2:
 
         return f"Advantage {self.player2_name}"
 
+    def _set_points_player(self, points: int, player_name: str) -> None:
+
+        try:
+            if points < 0:
+                raise ValueError("Нельзя добавить отрицательное число к очкам.")
+
+            self.scores[player_name] += points
+
+        except ValueError as e:
+            raise ValueError(f"Значения нету в списке имён игроков или добавлено отрицательное число': {str(e)}")
+
     def set_p1_score(self, number: int) -> None:
         """
         Sets the score of the first player.
@@ -208,7 +219,7 @@ class TennisGameDefactored2:
         Args:
             number (int): The number of points to add to the first player's score.
         """
-        self.scores[self.player1_name] += number
+        self._set_points_player(number, self.player1_name)
 
     def set_p2_score(self, number: int) -> None:
         """
@@ -217,7 +228,7 @@ class TennisGameDefactored2:
         Args:
             number (int): The number of points to add to the second player's score.
         """
-        self.scores[self.player2_name] += number
+        self._set_points_player(number, self.player2_name)
 
 
 class TennisGameDefactored3:
