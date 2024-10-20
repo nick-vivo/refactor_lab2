@@ -52,6 +52,15 @@ class TennisGameDefactored1:
             return self._get_separate_scores()
 
     def _get_tied_score(self, points: int) -> str:
+        """
+        Returns the score when both players have the same number of points.
+
+        Args:
+            points (int): The number of points both players have.
+
+        Returns:
+            str: The tied score representation.
+        """
 
         POINTS_MAP = {
             0: "Love-All",
@@ -61,9 +70,20 @@ class TennisGameDefactored1:
         }
         return POINTS_MAP.get(points, "Deuce")
 
-    def _get_advantage_or_win_score(self, score1, score2) -> str:
+    def _get_advantage_or_win_score(self, score1: int, score2: int) -> str:
+        """
+        Returns the score when one of the players has an advantage or wins.
+
+        Args:
+            score1 (int): The score of the first player.
+            score2 (int): The score of the second player.
+
+        Returns:
+            str: The advantage or win representation.
+        """
 
         minus_result = score1 - score2
+
         if minus_result == 1:
             return f"Advantage {self.player1_name}"
         elif minus_result == -1:
@@ -73,8 +93,17 @@ class TennisGameDefactored1:
         else:
             return f"Win for {self.player2_name}"
 
-    def _get_separate_scores(self, score1, score2) -> str:
+    def _get_separate_scores(self, score1: int, score2: int) -> str:
+        """
+        Returns the score when both players have different points.
 
+        Args:
+            score1 (int): The score of the first player.
+            score2 (int): The score of the second player.
+
+        Returns:
+            str: The separate scores representation.
+        """
         scores = []
 
         for points in [(score1, self.player1_name), (score2, self.player2_name)]:
@@ -138,7 +167,7 @@ class TennisGameDefactored2:
         else:
             return self._handle_regular_score(score1, score2)
 
-    def _handle_draw_score(self, points) -> str:
+    def _handle_draw_score(self, points: int) -> str:
 
         if points < 4:
 
@@ -147,7 +176,7 @@ class TennisGameDefactored2:
 
         return "Deuce"
 
-    def _handle_regular_score(self, score1, score2) -> str:
+    def _handle_regular_score(self, score1: int, score2: int) -> str:
 
         score_names = ["Love", "Fifteen", "Thirty", "Forty"]
 
@@ -156,7 +185,7 @@ class TennisGameDefactored2:
 
         return f"{p1_res}-{p2_res}"
 
-    def _handle_win_or_advantage(self, score1, score2) -> str:
+    def _handle_win_or_advantage(self, score1: int, score2: int) -> str:
 
         if score1 >= 4 and (score1 - score2) >= 2:
             return f"Win for {self.player1_name}"
