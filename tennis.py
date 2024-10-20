@@ -224,8 +224,8 @@ class TennisGameDefactored3:
     Attributes:
         p1_name (str): The name of the first player.
         p2_name (str): The name of the second player.
-        p1 (int): The number of points scored by the first player.
-        p2 (int): The number of points scored by the second player.
+        p1_points (int): The number of points scored by the first player.
+        p2_points (int): The number of points scored by the second player.
     """
 
     def __init__(self, player1_name: str, player2_name: str) -> None:
@@ -238,8 +238,8 @@ class TennisGameDefactored3:
         """
         self.p1_name = player1_name
         self.p2_name = player2_name
-        self.p1 = 0
-        self.p2 = 0
+        self.p1_points = 0
+        self.p2_points = 0
 
     def won_point(self, player_name: str) -> None:
         """
@@ -249,9 +249,11 @@ class TennisGameDefactored3:
             player_name (str): The name of the player who won the point.
         """
         if player_name == self.p1_name:
-            self.p1 += 1
+            self.p1_points += 1
+        elif player_name == self.p2_name:
+            self.p2_points += 1
         else:
-            self.p2 += 1
+            raise ValueError(f"Player {player_name} is not part of the game.")
 
     def score(self) -> str:
         """
@@ -260,16 +262,46 @@ class TennisGameDefactored3:
         Returns:
             str: The current score of the game.
         """
-        if self.p1 < 4 and self.p2 < 4:
-            points = ["Love", "Fifteen", "Thirty", "Forty"]
-            score = points[self.p1]
-            return score + "-All" if self.p1 == self.p2 else score + "-" + points[self.p2]
+        if self._is_game_in_progress():
+            return self._get_regular_score()
         else:
-            if self.p1 == self.p2:
-                return "Deuce"
-            winner = self.p1_name if self.p1 > self.p2 else self.p2_name
-            return f"Advantage {winner}" if (self.p1 - self.p2) ** 2 == 1 else f"Win for {winner}"
+            return self._get_final_score()
 
+    def _is_game_in_progress(self) -> bool:
+        """
+        Checks if the game is still in progress (less than 4 points for both players).
 
-# NOTE: You must change this to point at the one of the three examples that you're working on!
-TennisGame = TennisGameDefactored1
+        Returns:
+            bool: True if the game is in progress, False otherwise.
+        """
+        return self.p1_points < 4 and self.p2_points < 4
+
+    def _get_regular_score(self) -> str:
+        """
+        Returns the score when both players have less than 4 points.
+
+        Returns:
+            str: The current score in regular play.
+        """
+        points = ["Love", "Fifteen", "Thirty", "Forty"]
+        score1 = points[self.p1_points]
+        score2 = points[self.p2_points]
+        return score1 + "-All" if self.p1_points == self.p2_points else f"{score1}-{score2}"
+
+    def _get_final_score(self) -> str:
+        """
+        Returns the score when one player has 4 or more points.
+
+        Returns:
+            str: The final score indicating win or advantage.
+        """
+        if self.p1_points == self.p2_points:
+            return "Deuce"
+
+        winner = self.p1_name if self.p1_points > self.p2_points else self.p2_name
+        score_difference = abs(self.p1_points - self.p2_points)
+
+        if score_difference == 1:
+            return f"Advantage {winner}"
+        else:
+            return f"Win for {winner}"
