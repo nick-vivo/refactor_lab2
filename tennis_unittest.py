@@ -2,72 +2,263 @@
 
 import unittest
 
-from tennis import TennisGame
+from tennis import TennisGameDefactored1, TennisGameDefactored2, TennisGameDefactored3
 
-test_cases = [
-    (0, 0, "Love-All", 'player1', 'player2'),
-    (1, 1, "Fifteen-All", 'player1', 'player2'),
-    (2, 2, "Thirty-All", 'player1', 'player2'),
-    (3, 3, "Forty-All", 'player1', 'player2'),
-    (4, 4, "Deuce", 'player1', 'player2'),
 
-    (1, 0, "Fifteen-Love", 'player1', 'player2'),
-    (0, 1, "Love-Fifteen", 'player1', 'player2'),
-    (2, 0, "Thirty-Love", 'player1', 'player2'),
-    (0, 2, "Love-Thirty", 'player1', 'player2'),
-    (3, 0, "Forty-Love", 'player1', 'player2'),
-    (0, 3, "Love-Forty", 'player1', 'player2'),
-    (4, 0, "Win for player1", 'player1', 'player2'),
-    (0, 4, "Win for player2", 'player1', 'player2'),
+class TestTennisGameDefactored3(unittest.TestCase):
 
-    (2, 1, "Thirty-Fifteen", 'player1', 'player2'),
-    (1, 2, "Fifteen-Thirty", 'player1', 'player2'),
-    (3, 1, "Forty-Fifteen", 'player1', 'player2'),
-    (1, 3, "Fifteen-Forty", 'player1', 'player2'),
-    (4, 1, "Win for player1", 'player1', 'player2'),
-    (1, 4, "Win for player2", 'player1', 'player2'),
+    def setUp(self):
+        """Create a new game before each test."""
+        self.game = TennisGameDefactored3("player1", "player2")
 
-    (3, 2, "Forty-Thirty", 'player1', 'player2'),
-    (2, 3, "Thirty-Forty", 'player1', 'player2'),
-    (4, 2, "Win for player1", 'player1', 'player2'),
-    (2, 4, "Win for player2", 'player1', 'player2'),
+    def test_initial_score(self):
+        """Test the initial score of the game."""
+        self.assertEqual(self.game.score(), "Zero-All")
 
-    (4, 3, "Advantage player1", 'player1', 'player2'),
-    (3, 4, "Advantage player2", 'player1', 'player2'),
-    (5, 4, "Advantage player1", 'player1', 'player2'),
-    (4, 5, "Advantage player2", 'player1', 'player2'),
-    (15, 14, "Advantage player1", 'player1', 'player2'),
-    (14, 15, "Advantage player2", 'player1', 'player2'),
+    def test_score_after_one_point(self):
+        """Test the score after player1 wins one point."""
+        self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "One-Zero")
 
-    (6, 4, 'Win for player1', 'player1', 'player2'), 
-    (4, 6, 'Win for player2', 'player1', 'player2'), 
-    (16, 14, 'Win for player1', 'player1', 'player2'), 
-    (14, 16, 'Win for player2', 'player1', 'player2'), 
+    def test_score_after_two_points(self):
+        """Test the score after player2 wins one point."""
+        self.game.won_point("player1")
+        self.game.won_point("player2")
+        self.assertEqual(self.game.score(), "One-All")
 
-    (6, 4, 'Win for One', 'One', 'player2'),
-    (4, 6, 'Win for Two', 'player1', 'Two'), 
-    (6, 5, 'Advantage One', 'One', 'player2'),
-    (5, 6, 'Advantage Two', 'player1', 'Two'), 
-    
-    ]
+    def test_score_after_multiple_points(self):
+        """Test the score after various points."""
+        for _ in range(3):
+            self.game.won_point("player1")
+        for _ in range(2):
+            self.game.won_point("player2")
 
-def play_game(p1Points, p2Points, p1Name, p2Name):
-    game = TennisGame(p1Name, p2Name)
-    for i in range(max(p1Points, p2Points)):
-        if i < p1Points:
-            game.won_point(p1Name)
-        if i < p2Points:
-            game.won_point(p2Name)
-    return game
+        self.assertEqual(self.game.score(), "Three-Two")
 
-class TestTennis(unittest.TestCase):
-     
-    def test_Score(self):
-        for testcase in test_cases:
-            (p1Points, p2Points, score, p1Name, p2Name) = testcase
-            game = play_game(p1Points, p2Points, p1Name, p2Name)
-            self.assertEqual(score, game.score())
- 
+    def test_win_condition_player1(self):
+        """Test win condition for player1."""
+        for _ in range(4):
+            self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "Win for player1")
+
+    def test_win_condition_player2(self):
+        """Test win condition for player2."""
+        for _ in range(4):
+            self.game.won_point("player2")
+        self.assertEqual(self.game.score(), "Win for player2")
+
+    def test_advantage_player1(self):
+
+        """Test advantage condition for player1."""
+        for _ in range(3):
+            self.game.won_point("player1")
+        for _ in range(4):
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Advantage player2")
+        self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "Deuce")
+
+    def test_deuce(self):
+        """Test deuce condition."""
+        for _ in range(3):
+            self.game.won_point("player1")
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Three-All")
+
+    def test_invalid_player(self):
+        """Test invalid player raises ValueError."""
+        with self.assertRaises(ValueError) as context:
+            self.game.won_point("invalid_player")
+        self.assertEqual(str(context.exception), "Player invalid_player is not part of the game.")
+
+    def test_score_with_high_points(self):
+        """Test score with high points."""
+        self.game.p1_points = 6
+        self.game.p2_points = 4
+        self.assertEqual(self.game.score(), "Win for player1")
+
+        self.game.p1_points = 4
+        self.game.p2_points = 6
+        self.assertEqual(self.game.score(), "Win for player2")
+
+    def test_advantage_with_high_points(self):
+        """Test advantage with high points."""
+        self.game.p1_points = 5
+        self.game.p2_points = 4 
+        self.assertEqual(self.game.score(), "Advantage player1")
+
+        self.game.p1_points = 4 
+        self.game.p2_points = 5
+        self.assertEqual(self.game.score(), "Advantage player2")
+
+
+class TestTennisGameDefactored2(unittest.TestCase):
+
+    def setUp(self):
+        """Create a new game before each test."""
+        self.game = TennisGameDefactored2("player1", "player2")
+
+    def test_initial_score(self):
+        """Test the initial score of the game."""
+        self.assertEqual(self.game.score(), "Zero-All")
+
+    def test_score_after_one_point(self):
+        """Test the score after player1 wins one point."""
+        self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "One-Zero")
+
+    def test_score_after_two_points(self):
+        """Test the score after player2 wins one point."""
+        self.game.won_point("player1")
+        self.game.won_point("player2")
+        self.assertEqual(self.game.score(), "One-All")
+
+    def test_score_after_multiple_points(self):
+        """Test the score after various points."""
+        for _ in range(3):
+            self.game.won_point("player1")
+        for _ in range(2):
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Three-Two")
+
+    def test_win_condition_player1(self):
+        """Test win condition for player1."""
+        for _ in range(4):
+            self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "Win for player1")
+
+    def test_win_condition_player2(self):
+        """Test win condition for player2."""
+        for _ in range(4):
+            self.game.won_point("player2")
+        self.assertEqual(self.game.score(), "Win for player2")
+
+    def test_advantage_player1(self):
+
+        """Test advantage condition for player1."""
+        for _ in range(3):
+            self.game.won_point("player1")
+        for _ in range(4):
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Advantage player2")
+        self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "Deuce")
+
+    def test_deuce(self):
+        """Test deuce condition."""
+        for _ in range(3):
+            self.game.won_point("player1")
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Three-All")
+
+    def test_score_with_high_points(self):
+        """Test score with high points."""
+        self.game.scores[self.game.player1_name] = 6
+        self.game.scores[self.game.player2_name] = 4
+        self.assertEqual(self.game.score(), "Win for player1")
+
+        self.game.scores[self.game.player1_name] = 4
+        self.game.scores[self.game.player2_name] = 6
+        self.assertEqual(self.game.score(), "Win for player2")
+
+    def test_advantage_with_high_points(self):
+        """Test advantage with high points."""
+        self.game.scores[self.game.player1_name] = 5
+        self.game.scores[self.game.player2_name] = 4
+        self.assertEqual(self.game.score(), "Advantage player1")
+
+        self.game.scores[self.game.player1_name] = 4
+        self.game.scores[self.game.player2_name] = 5
+        self.assertEqual(self.game.score(), "Advantage player2")
+
+
+class TestTennisGameDefactored1(unittest.TestCase):
+
+    def setUp(self):
+        """Create a new game before each test."""
+        self.game = TennisGameDefactored1("player1", "player2")
+
+    def test_initial_score(self):
+        """Test the initial score of the game."""
+        self.assertEqual(self.game.score(), "Zero-All")
+
+    def test_score_after_one_point(self):
+        """Test the score after player1 wins one point."""
+        self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "One-Zero")
+
+    def test_score_after_two_points(self):
+        """Test the score after player2 wins one point."""
+        self.game.won_point("player1")
+        self.game.won_point("player2")
+        self.assertEqual(self.game.score(), "One-All")
+
+    def test_score_after_multiple_points(self):
+        """Test the score after various points."""
+        for _ in range(3):
+            self.game.won_point("player1")
+        for _ in range(2):
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Three-Two")
+
+    def test_win_condition_player1(self):
+        """Test win condition for player1."""
+        for _ in range(4):
+            self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "Win for player1")
+
+    def test_win_condition_player2(self):
+        """Test win condition for player2."""
+        for _ in range(4):
+            self.game.won_point("player2")
+        self.assertEqual(self.game.score(), "Win for player2")
+
+    def test_advantage_player1(self):
+
+        """Test advantage condition for player1."""
+        for _ in range(3):
+            self.game.won_point("player1")
+        for _ in range(4):
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Advantage player2")
+        self.game.won_point("player1")
+        self.assertEqual(self.game.score(), "Deuce")
+
+    def test_deuce(self):
+        """Test deuce condition."""
+        for _ in range(3):
+            self.game.won_point("player1")
+            self.game.won_point("player2")
+
+        self.assertEqual(self.game.score(), "Three-All")
+
+    def test_score_with_high_points(self):
+        """Test score with high points."""
+        self.game.scores[self.game.player1_name] = 6
+        self.game.scores[self.game.player2_name] = 4
+        self.assertEqual(self.game.score(), "Win for player1")
+
+        self.game.scores[self.game.player1_name] = 4
+        self.game.scores[self.game.player2_name] = 6
+        self.assertEqual(self.game.score(), "Win for player2")
+
+    def test_advantage_with_high_points(self):
+        """Test advantage with high points."""
+        self.game.scores[self.game.player1_name] = 5
+        self.game.scores[self.game.player2_name] = 4
+        self.assertEqual(self.game.score(), "Advantage player1")
+
+        self.game.scores[self.game.player1_name] = 4
+        self.game.scores[self.game.player2_name] = 5
+        self.assertEqual(self.game.score(), "Advantage player2")
+
+
 if __name__ == "__main__":
-    unittest.main() 
-        
+    unittest.main()

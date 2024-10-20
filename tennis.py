@@ -1,178 +1,324 @@
 # -*- coding: utf-8 -*-
 
 class TennisGameDefactored1:
+    """
+    A class representing a tennis game.
 
-    def __init__(self, player1Name, player2Name):
-        self.player1Name = player1Name
-        self.player2Name = player2Name
-        self.p1points = 0
-        self.p2points = 0
+    Attributes:
+        player1_name (str): The name of the first player.
+        player2_name (str): The name of the second player.
+        p1_points (int): The number of points scored by the first player.
+        p2_points (int): The number of points scored by the second player.
+        scores (dict): A dictionary to store the scores of both players.
+    """
 
-    def won_point(self, playerName):
-        if playerName == self.player1Name:
-            self.p1points += 1
+    def __init__(self, player1_name: str, player2_name: str) -> None:
+        """
+        Initializes a new tennis game with two players.
+
+        Args:
+            player1_name (str): The name of the first player.
+            player2_name (str): The name of the second player.
+        """
+        self.player1_name = player1_name
+        self.player2_name = player2_name
+        self.scores = {player1_name : 0, player2_name : 0}
+
+    def won_point(self, player_name: str) -> None:
+        """
+        Increments the points of the player who won the point.
+
+        Args:
+            player_name (str): The name of the player who won the point.
+        """
+        try:
+            self.scores[player_name] += 1
+        except ValueError as e:
+            raise ValueError(f"Bad str: {str(e)}")
+
+    def score(self) -> str:
+        """
+        Returns the current score of the game.
+
+        Returns:
+            str: The current score of the game.
+        """
+        score1, score2 = self.scores.values()
+
+        if score1 == score2:
+            return self._get_tied_score(score1)
+
+        elif max(score1, score2) >= 4:
+            return self._get_advantage_or_win_score(score1, score2)
+
         else:
-            self.p2points += 1
+            return self._get_separate_scores(score1, score2)
 
-    def score(self):
-        result = ""
-        tempScore=0
-        if (self.p1points==self.p2points):
-            result = {
-                0 : "Love-All",
-                1 : "Fifteen-All",
-                2 : "Thirty-All",
-                3 : "Forty-All",
-            }.get(self.p1points, "Deuce")
-        elif (self.p1points>=4 or self.p2points>=4):
-            minusResult = self.p1points-self.p2points
-            if (minusResult==1):
-                result ="Advantage " + self.player1Name
-            elif (minusResult ==-1):
-                result ="Advantage " + self.player2Name
-            elif (minusResult>=2):
-                result = "Win for " + self.player1Name
-            else:
-                result ="Win for " + self.player2Name
+    def _get_tied_score(self, points: int) -> str:
+        """
+        Returns the score when both players have the same number of points.
+
+        Args:
+            points (int): The number of points both players have.
+
+        Returns:
+            str: The tied score representation.
+        """
+
+        POINTS_MAP = {
+            0: "Zero-All",
+            1: "One-All",
+            2: "Two-All",
+            3: "Three-All",
+        }
+        return POINTS_MAP.get(points, "Deuce")
+
+    def _get_advantage_or_win_score(self, score1: int, score2: int) -> str:
+        """
+        Returns the score when one of the players has an advantage or wins.
+
+        Args:
+            score1 (int): The score of the first player.
+            score2 (int): The score of the second player.
+
+        Returns:
+            str: The advantage or win representation.
+        """
+
+        minus_result = score1 - score2
+
+        if minus_result == 1:
+            return f"Advantage {self.player1_name}"
+        elif minus_result == -1:
+            return f"Advantage {self.player2_name}"
+        elif minus_result >= 2:
+            return f"Win for {self.player1_name}"
         else:
-            for i in range(1,3):
-                if (i==1):
-                    tempScore = self.p1points
-                else:
-                    result+="-"
-                    tempScore = self.p2points
-                result += {
-                    0 : "Love",
-                    1 : "Fifteen",
-                    2 : "Thirty",
-                    3 : "Forty",
-                }[tempScore]
-        return result
+            return f"Win for {self.player2_name}"
+
+    def _get_separate_scores(self, score1: int, score2: int) -> str:
+        """
+        Returns the score when both players have different points.
+
+        Args:
+            score1 (int): The score of the first player.
+            score2 (int): The score of the second player.
+
+        Returns:
+            str: The separate scores representation.
+        """
+        scores_str = []
+
+        score_map = {
+            0: "Zero",
+            1: "One",
+            2: "Two",
+            3: "Three",
+        }
+
+        for points, player_name in [(score1, self.player1_name), (score2, self.player2_name)]:
+            scores_str.append(score_map[points])
+
+        return "-".join(scores_str)
 
 
 class TennisGameDefactored2:
-    def __init__(self, player1Name, player2Name):
-        self.player1Name = player1Name
-        self.player2Name = player2Name
-        self.p1points = 0
-        self.p2points = 0
-        
-    def won_point(self, playerName):
-        if playerName == self.player1Name:
-            self.P1Score()
-        else:
-            self.P2Score()
-    
-    def score(self):
-        result = ""
-        if (self.p1points == self.p2points and self.p1points < 4):
-            if (self.p1points==0):
-                result = "Love"
-            if (self.p1points==1):
-                result = "Fifteen"
-            if (self.p1points==2):
-                result = "Thirty"
-            if (self.p1points==3):
-                result = "Forty"
-            result += "-All"
-        if (self.p1points==self.p2points and self.p1points>3):
-            result = "Deuce"
-        
-        P1res = ""
-        P2res = ""
-        if (self.p1points > 0 and self.p2points==0):
-            if (self.p1points==1):
-                P1res = "Fifteen"
-            if (self.p1points==2):
-                P1res = "Thirty"
-            if (self.p1points==3):
-                P1res = "Forty"
-            
-            P2res = "Love"
-            result = P1res + "-" + P2res
-        if (self.p2points > 0 and self.p1points==0):
-            if (self.p2points==1):
-                P2res = "Fifteen"
-            if (self.p2points==2):
-                P2res = "Thirty"
-            if (self.p2points==3):
-                P2res = "Forty"
-            
-            P1res = "Love"
-            result = P1res + "-" + P2res
-        
-        
-        if (self.p1points>self.p2points and self.p1points < 4):
-            if (self.p1points==2):
-                P1res="Thirty"
-            if (self.p1points==3):
-                P1res="Forty"
-            if (self.p2points==1):
-                P2res="Fifteen"
-            if (self.p2points==2):
-                P2res="Thirty"
-            result = P1res + "-" + P2res
-        if (self.p2points>self.p1points and self.p2points < 4):
-            if (self.p2points==2):
-                P2res="Thirty"
-            if (self.p2points==3):
-                P2res="Forty"
-            if (self.p1points==1):
-                P1res="Fifteen"
-            if (self.p1points==2):
-                P1res="Thirty"
-            result = P1res + "-" + P2res
-        
-        if (self.p1points > self.p2points and self.p2points >= 3):
-            result = "Advantage " + self.player1Name
-        
-        if (self.p2points > self.p1points and self.p1points >= 3):
-            result = "Advantage " + self.player2Name
-        
-        if (self.p1points>=4 and self.p2points>=0 and (self.p1points-self.p2points)>=2):
-            result = "Win for " + self.player1Name
-        if (self.p2points>=4 and self.p1points>=0 and (self.p2points-self.p1points)>=2):
-            result = "Win for " + self.player2Name
-        return result
-    
-    def SetP1Score(self, number):
-        for i in range(number):
-            self.P1Score()
-    
-    def SetP2Score(self, number):
-        for i in range(number):
-            self.P2Score()
-    
-    def P1Score(self):
-        self.p1points +=1
-    
-    
-    def P2Score(self):
-        self.p2points +=1
-        
-class TennisGameDefactored3:
-    def __init__(self, player1Name, player2Name):
-        self.p1N = player1Name
-        self.p2N = player2Name
-        self.p1 = 0
-        self.p2 = 0
-        
-    def won_point(self, n):
-        if n == self.p1N:
-            self.p1 += 1
-        else:
-            self.p2 += 1
-    
-    def score(self):
-        if (self.p1 < 4 and self.p2 < 4):
-            p = ["Love", "Fifteen", "Thirty", "Forty"]
-            s = p[self.p1]
-            return s + "-All" if (self.p1 == self.p2) else s + "-" + p[self.p2]
-        else:
-            if (self.p1 == self.p2):
-                return "Deuce"
-            s = self.p1N if self.p1 > self.p2 else self.p2N
-            return "Advantage " + s if ((self.p1-self.p2)*(self.p1-self.p2) == 1) else "Win for " + s
+    """
+    A class representing a tennis game.
 
-# NOTE: You must change this to point at the one of the three examples that you're working on!
-TennisGame = TennisGameDefactored1
+    Attributes:
+        player1_name (str): The name of the first player.
+        player2_name (str): The name of the second player.
+        p1_points (int): The number of points scored by the first player.
+        p2_points (int): The number of points scored by the second player.
+    """
+
+    def __init__(self, player1_name: str, player2_name: str) -> None:
+        """
+        Initializes a new tennis game with two players.
+
+        Args:
+            player1_name (str): The name of the first player.
+            player2_name (str): The name of the second player.
+        """
+        self.player1_name = player1_name
+        self.player2_name = player2_name
+        self.scores = {player1_name : 0, player2_name : 0}
+
+    def won_point(self, player_name: str) -> None:
+        """
+        Increments the points of the player who won the point.
+
+        Args:
+            player_name (str): The name of the player who won the point.
+        """
+        self._set_points_player(1, player_name)
+
+    def score(self) -> str:
+        """
+        Returns the current score of the game.
+
+        Returns:
+            str: The current score of the game.
+        """
+        score1, score2 = self.scores.values()
+
+        if score1 == score2:
+            return self._handle_draw_score(score1)
+
+        elif max(score1, score2) >= 4:
+            return self._handle_win_or_advantage(score1, score2)
+
+        else:
+            return self._handle_regular_score(score1, score2)
+
+    def _handle_draw_score(self, points: int) -> str:
+
+        if points < 4:
+
+            answer = ["Zero", "One", "Two", "Three"]
+            return f"{answer[points]}-All"
+
+        return "Deuce"
+
+    def _handle_regular_score(self, score1: int, score2: int) -> str:
+
+        score_names = ["Zero", "One", "Two", "Three"]
+
+        p1_res = score_names[score1]
+        p2_res = score_names[score2]
+
+        return f"{p1_res}-{p2_res}"
+
+    def _handle_win_or_advantage(self, score1: int, score2: int) -> str:
+
+        if score1 >= 4 and (score1 - score2) >= 2:
+            return f"Win for {self.player1_name}"
+
+        if score2 >= 4 and (score2 - score1) >= 2:
+            return f"Win for {self.player2_name}"
+
+        if score1 > score2:
+            return f"Advantage {self.player1_name}"
+
+        return f"Advantage {self.player2_name}"
+
+    def _set_points_player(self, points: int, player_name: str) -> None:
+
+        try:
+            if points < 0:
+                raise ValueError("Negative arg points: ", points)
+
+            self.scores[player_name] += points
+
+        except ValueError as e:
+            raise ValueError(f"Neg number or player not part.")
+
+    def set_p1_score(self, number: int) -> None:
+        """
+        Sets the score of the first player.
+
+        Args:
+            number (int): The number of points to add to the first player's score.
+        """
+        self._set_points_player(number, self.player1_name)
+
+    def set_p2_score(self, number: int) -> None:
+        """
+        Sets the score of the second player.
+
+        Args:
+            number (int): The number of points to add to the second player's score.
+        """
+        self._set_points_player(number, self.player2_name)
+
+
+class TennisGameDefactored3:
+    """
+    A class representing a tennis game.
+
+    Attributes:
+        p1_name (str): The name of the first player.
+        p2_name (str): The name of the second player.
+        p1_points (int): The number of points scored by the first player.
+        p2_points (int): The number of points scored by the second player.
+    """
+
+    def __init__(self, player1_name: str, player2_name: str) -> None:
+        """
+        Initializes a new tennis game with two players.
+
+        Args:
+            player1_name (str): The name of the first player.
+            player2_name (str): The name of the second player.
+        """
+        self.p1_name = player1_name
+        self.p2_name = player2_name
+        self.p1_points = 0
+        self.p2_points = 0
+
+    def won_point(self, player_name: str) -> None:
+        """
+        Increments the points of the player who won the point.
+
+        Args:
+            player_name (str): The name of the player who won the point.
+        """
+        if player_name == self.p1_name:
+            self.p1_points += 1
+        elif player_name == self.p2_name:
+            self.p2_points += 1
+        else:
+            raise ValueError(f"Player {player_name} is not part of the game.")
+
+    def score(self) -> str:
+        """
+        Returns the current score of the game.
+
+        Returns:
+            str: The current score of the game.
+        """
+        if self._is_game_in_progress():
+            return self._get_regular_score()
+        else:
+            return self._get_final_score()
+
+    def _is_game_in_progress(self) -> bool:
+        """
+        Checks if the game is still in progress (less than 4 points for both players).
+
+        Returns:
+            bool: True if the game is in progress, False otherwise.
+        """
+        return self.p1_points < 4 and self.p2_points < 4
+
+    def _get_regular_score(self) -> str:
+        """
+        Returns the score when both players have less than 4 points.
+
+        Returns:
+            str: The current score in regular play.
+        """
+        points = ["Zero", "One", "Two", "Three"]
+
+        score1 = points[self.p1_points]
+        score2 = points[self.p2_points]
+        return score1 + "-All" if self.p1_points == self.p2_points else f"{score1}-{score2}"
+
+    def _get_final_score(self) -> str:
+        """
+        Returns the score when one player has 4 or more points.
+
+        Returns:
+            str: The final score indicating win or advantage.
+        """
+        if self.p1_points == self.p2_points:
+            return "Deuce"
+
+        winner = self.p1_name if self.p1_points > self.p2_points else self.p2_name
+        score_difference = abs(self.p1_points - self.p2_points)
+
+        if score_difference == 1:
+            return f"Advantage {winner}"
+        else:
+            return f"Win for {winner}"
