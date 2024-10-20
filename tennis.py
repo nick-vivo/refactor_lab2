@@ -31,7 +31,10 @@ class TennisGameDefactored1:
         Args:
             player_name (str): The name of the player who won the point.
         """
-        self.scores[player_name] += 1
+        try:
+            self.scores[player_name] += 1
+        except ValueError as e:
+            raise ValueError(f"Значения нету в списке имён игроков': {str(e)}")
 
     def score(self) -> str:
         """
